@@ -6,7 +6,6 @@ from tensorflow.keras import layers
 from tensorflow.keras import preprocessing
 from tensorflow.keras.models import Sequential
 import time
-import pickle
 
 import pathlib
 
@@ -122,6 +121,24 @@ history = model.fit(
   epochs=epochs
 )
 
+sunflower_url = "https://storage.googleapis.com/download.tensorflow.org/example_images/592px-Red_sunflower.jpg"
+sunflower_path = tf.keras.utils.get_file('Red_sunflower', origin=sunflower_url)
+
+img = keras.preprocessing.image.load_img(
+    sunflower_path, target_size=(img_height, img_width)
+)
+img_array = keras.preprocessing.image.img_to_array(img)
+img_array = tf.expand_dims(img_array, 0) # Create a batch
+
+predictions = model.predict(img_array)
+score = tf.nn.softmax(predictions[0])
+
+print(
+    "FIRST TRAIN: This image most likely belongs to {} with a {:.2f} percent confidence."
+    .format(class_names[np.argmax(score)], 100 * np.max(score))
+)
+
+
 data_augmentation = keras.Sequential(
   [
     layers.experimental.preprocessing.RandomFlip("horizontal", 
@@ -154,30 +171,18 @@ model.compile(optimizer='adam',
 
 model.summary()
 
-'''
 epochs = 15
 history = model.fit(
   train_ds,
   validation_data=val_ds,
   epochs=epochs
 )
-'''
-
-
-sunflower_url = "https://storage.googleapis.com/download.tensorflow.org/example_images/592px-Red_sunflower.jpg"
-sunflower_path = tf.keras.utils.get_file('Red_sunflower', origin=sunflower_url)
-
-img = keras.preprocessing.image.load_img(
-    sunflower_path, target_size=(img_height, img_width)
-)
-img_array = keras.preprocessing.image.img_to_array(img)
-img_array = tf.expand_dims(img_array, 0) # Create a batch
 
 predictions = model.predict(img_array)
 score = tf.nn.softmax(predictions[0])
 
 print(
-    "This image most likely belongs to {} with a {:.2f} percent confidence."
+    "SECOND TRAIN: This image most likely belongs to {} with a {:.2f} percent confidence."
     .format(class_names[np.argmax(score)], 100 * np.max(score))
 )
 
@@ -195,6 +200,6 @@ predictions = new_model.predict(img_array)
 score = tf.nn.softmax(predictions[0])
 
 print(
-    "This image most likely belongs to {} with a {:.2f} percent confidence."
+    "CLONED TRAIN: This image most likely belongs to {} with a {:.2f} percent confidence."
     .format(class_names[np.argmax(score)], 100 * np.max(score))
 )
