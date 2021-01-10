@@ -3,6 +3,9 @@ from tensorflow import keras
 import numpy as np
 import os
 import sys
+import tkinter as tk
+
+window = tk.Tk()
 
 batch_size = 32
 img_height = 180
@@ -34,6 +37,18 @@ img_array = tf.expand_dims(img_array, 0) # Create a batch
 
 predictions = new_model.predict(img_array)
 score = tf.nn.softmax(predictions[0])
+
+outcome = tk.Label(
+    text="This image most likely belongs to {} with a {:.2f} percent confidence."
+    .format(class_names[np.argmax(score)], 100 * np.max(score)),
+    foreground= "pink",
+    background= "blue",
+    width=100,
+    height=50
+
+)
+
+outcome.pack()
 
 print(
     "CLONED TRAIN: This image most likely belongs to {} with a {:.2f} percent confidence."
